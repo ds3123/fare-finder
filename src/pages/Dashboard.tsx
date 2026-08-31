@@ -1,35 +1,25 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+
 import { supabase } from "@/integrations/supabase/client";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
+import type { AuthOutletContext } from "@/components/RequireAuth";
 
-export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({
-    meta: [
-      { title: "Dashboard — Flight Price Notifier" },
-      {
-        name: "description",
-        content: "Your Flight Price Notifier dashboard for fare alerts.",
-      },
-      { property: "og:title", content: "Dashboard — Flight Price Notifier" },
-      {
-        property: "og:description",
-        content: "Your Flight Price Notifier dashboard for fare alerts.",
-      },
-    ],
-  }),
-  component: Dashboard,
-});
+export default function Dashboard() {
+  useDocumentMeta(
+    "Dashboard — Flight Price Notifier",
+    "Your Flight Price Notifier dashboard for fare alerts.",
+  );
 
-function Dashboard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user } = Route.useRouteContext();
+  const { user } = useOutletContext<AuthOutletContext>();
 
   async function handleSignOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    navigate("/auth", { replace: true });
   }
 
   return (
@@ -50,12 +40,8 @@ function Dashboard() {
 
       <main className="relative z-10 mx-auto w-full max-w-5xl px-5 py-12">
         <div className="animate-fade-up">
-          <h1 className="text-3xl font-semibold tracking-tight">
-            Dashboard．儀表板
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Signed in as {user?.email}
-          </p>
+          <h1 className="text-3xl font-semibold tracking-tight">Dashboard．儀表板</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Signed in as {user?.email}</p>
         </div>
 
         <div className="animate-fade-up-delay-1 mt-8 rounded-2xl border border-dashed border-border bg-card p-10 text-center">
@@ -63,8 +49,8 @@ function Dashboard() {
           <h2 className="mt-4 text-lg font-semibold">尚未設定航線提醒</h2>
           <p className="mt-1 text-sm text-primary">No fare alerts yet</p>
           <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
-            航線訂閱與目標價設定即將推出，敬請期待。Route subscriptions and
-            target prices are coming soon.
+            航線訂閱與目標價設定即將推出，敬請期待。Route subscriptions and target prices are coming
+            soon.
           </p>
         </div>
       </main>

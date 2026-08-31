@@ -1,26 +1,12 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 import { supabase } from "@/integrations/supabase/client";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 
-export const Route = createFileRoute("/auth")({
-  head: () => ({
-    meta: [
-      { title: "Sign in — Flight Price Notifier" },
-      {
-        name: "description",
-        content: "Sign in to manage your flight fare alerts.",
-      },
-      { property: "og:title", content: "Sign in — Flight Price Notifier" },
-      {
-        property: "og:description",
-        content: "Sign in to manage your flight fare alerts.",
-      },
-    ],
-  }),
-  component: AuthPage,
-});
+export default function AuthPage() {
+  useDocumentMeta("Sign in — Flight Price Notifier", "Sign in to manage your flight fare alerts.");
 
-function AuthPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -31,7 +17,7 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard", replace: true });
+      if (data.session) navigate("/app", { replace: true });
     });
   }, [navigate]);
 
@@ -47,7 +33,7 @@ function AuthPage() {
         password,
       });
       if (error) setError(error.message);
-      else navigate({ to: "/dashboard", replace: true });
+      else navigate("/app", { replace: true });
     } else {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -55,7 +41,7 @@ function AuthPage() {
         options: { emailRedirectTo: window.location.origin },
       });
       if (error) setError(error.message);
-      else if (data.session) navigate({ to: "/dashboard", replace: true });
+      else if (data.session) navigate("/app", { replace: true });
       else setMessage("Check your email to confirm your account．請至信箱完成驗證。");
     }
     setLoading(false);
@@ -73,19 +59,12 @@ function AuthPage() {
 
       <main className="relative z-10 flex flex-1 items-start justify-center px-5 py-10 sm:py-16">
         <div className="animate-fade-up w-full max-w-md rounded-2xl border border-border bg-card p-7 shadow-xl shadow-black/30">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Welcome back．登入
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Sign in to manage your fare alerts.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">Welcome back．登入</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Sign in to manage your fare alerts.</p>
 
           <form onSubmit={handleSubmit} className="mt-7 space-y-4">
             <div>
-              <label
-                htmlFor="email"
-                className="mb-1.5 block text-sm font-medium"
-              >
+              <label htmlFor="email" className="mb-1.5 block text-sm font-medium">
                 Email
               </label>
               <input
@@ -99,10 +78,7 @@ function AuthPage() {
               />
             </div>
             <div>
-              <label
-                htmlFor="password"
-                className="mb-1.5 block text-sm font-medium"
-              >
+              <label htmlFor="password" className="mb-1.5 block text-sm font-medium">
                 Password
               </label>
               <input
@@ -141,9 +117,7 @@ function AuthPage() {
             }}
             className="mt-5 w-full text-center text-sm text-muted-foreground transition-colors hover:text-primary"
           >
-            {mode === "signin"
-              ? "No account yet? Create one"
-              : "Already have an account? Sign in"}
+            {mode === "signin" ? "No account yet? Create one" : "Already have an account? Sign in"}
           </button>
         </div>
       </main>

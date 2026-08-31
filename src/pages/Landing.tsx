@@ -1,27 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import type { User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Flight Price Notifier — 機票降價通知" },
-      {
-        name: "description",
-        content:
-          "Watch popular flight routes from Taipei and get an email the moment the cheapest fare drops to your target price.",
-      },
-      { property: "og:title", content: "Flight Price Notifier — 機票降價通知" },
-      {
-        property: "og:description",
-        content:
-          "Set a route and a target price — we email you when the fare drops.",
-      },
-    ],
-  }),
-  component: Landing,
-});
+import { supabase } from "@/integrations/supabase/client";
+import { useDocumentMeta } from "@/lib/useDocumentMeta";
 
 const features = [
   {
@@ -55,9 +37,7 @@ function HeaderAuthButton() {
     supabase.auth.getUser().then(({ data }) => setUser(data.user));
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) =>
-      setUser(session?.user ?? null),
-    );
+    } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user ?? null));
     return () => subscription.unsubscribe();
   }, []);
 
@@ -75,7 +55,7 @@ function HeaderAuthButton() {
   return (
     <div className="flex items-center gap-2">
       <Link
-        to="/dashboard"
+        to="/app"
         className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
       >
         Dashboard / 儀表板
@@ -83,7 +63,7 @@ function HeaderAuthButton() {
       <button
         onClick={async () => {
           await supabase.auth.signOut();
-          navigate({ to: "/", replace: true });
+          navigate("/", { replace: true });
         }}
         className="rounded-lg border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
       >
@@ -93,7 +73,12 @@ function HeaderAuthButton() {
   );
 }
 
-function Landing() {
+export default function Landing() {
+  useDocumentMeta(
+    "Flight Price Notifier — 機票降價通知",
+    "Watch popular flight routes from Taipei and get an email the moment the cheapest fare drops to your target price.",
+  );
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] glow-violet" />
@@ -138,9 +123,7 @@ function Landing() {
               <div className="text-3xl">{f.icon}</div>
               <h2 className="mt-4 text-lg font-semibold">{f.title}</h2>
               <p className="mt-1 text-sm text-primary">{f.subtitle}</p>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                {f.body}
-              </p>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{f.body}</p>
             </article>
           ))}
         </section>
