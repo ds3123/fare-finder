@@ -47,6 +47,52 @@ const features = [
   },
 ];
 
+function HeaderAuthButton() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) =>
+      setUser(session?.user ?? null),
+    );
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (!user) {
+    return (
+      <Link
+        to="/auth"
+        className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+      >
+        Sign in / 登入
+      </Link>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <Link
+        to="/dashboard"
+        className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+      >
+        Dashboard / 儀表板
+      </Link>
+      <button
+        onClick={async () => {
+          await supabase.auth.signOut();
+          navigate({ to: "/", replace: true });
+        }}
+        className="rounded-lg border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+      >
+        Sign out / 登出
+      </button>
+    </div>
+  );
+}
+
 function Landing() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
