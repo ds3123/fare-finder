@@ -102,12 +102,7 @@ function Landing() {
         <span className="text-sm font-semibold tracking-tight sm:text-base">
           <span className="text-primary">✈</span> Flight Price Notifier
         </span>
-        <Link
-          to="/auth"
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-        >
-          Sign in / 登入
-        </Link>
+        <HeaderAuthButton />
       </header>
 
       <main className="relative z-10 mx-auto w-full max-w-6xl px-5">
